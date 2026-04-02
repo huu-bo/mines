@@ -502,7 +502,9 @@ int main() {
 		float mouse_x, mouse_y;
 		SDL_MouseButtonFlags mouse_flags = SDL_GetMouseState(&mouse_x, &mouse_y);
 
-		float cell_size; {
+		int board_offset_x, board_offset_y;
+		float cell_size;
+		{
 			size_t grid_width, grid_height;
 			size_t biggest_coord[board.n_dim];
 			for (size_t i = 0; i < board.n_dim; i++) {
@@ -510,6 +512,9 @@ int main() {
 			}
 			board__flatten_coord(&board, biggest_coord, &grid_width, &grid_height);
 			cell_size = fmin(window_height / (float)(grid_height + 1), window_width / (float)(grid_width + 1));
+
+			board_offset_x = (window_width - (grid_width + 1) * cell_size) / 2.0;
+			board_offset_y = (window_height - (grid_height + 1) * cell_size) / 2.0;
 		}
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -525,7 +530,7 @@ int main() {
 				size_t x, y;
 				board__flatten_coord(&board, coord, &x, &y);
 
-				SDL_FRect rect = {x * cell_size, y * cell_size, cell_size, cell_size};
+				SDL_FRect rect = {x * cell_size + board_offset_x, y * cell_size + board_offset_y, cell_size, cell_size};
 				SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 				SDL_RenderRect(renderer, &rect);
 
@@ -572,7 +577,7 @@ int main() {
 				size_t x, y;
 				board__flatten_coord(&board, coord, &x, &y);
 
-				SDL_FRect rect = {x * cell_size, y * cell_size, cell_size, cell_size};
+				SDL_FRect rect = {x * cell_size + board_offset_x, y * cell_size + board_offset_y, cell_size, cell_size};
 				SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 				SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
 				SDL_RenderFillRect(renderer, &rect);
