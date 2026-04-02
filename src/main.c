@@ -431,6 +431,7 @@ int main() {
 		SDL_SetTextureScaleMode(numbers_texture, SDL_SCALEMODE_NEAREST);
 	}
 
+	// TODO: Allow the player to pick board dimensions at run-time
 	const size_t dimensions[] = {4, 4, 4, 4};
 	const size_t mine_amount = 10;
 	struct Board board; {
@@ -501,8 +502,15 @@ int main() {
 		float mouse_x, mouse_y;
 		SDL_MouseButtonFlags mouse_flags = SDL_GetMouseState(&mouse_x, &mouse_y);
 
-		// float cell_size = fmin(window_height, (float)window_width * (16.0 / 9.0)) / 19.0;
-		float cell_size = fmin(window_height, window_width) / 19.0;
+		float cell_size; {
+			size_t grid_width, grid_height;
+			size_t biggest_coord[board.n_dim];
+			for (size_t i = 0; i < board.n_dim; i++) {
+				biggest_coord[i] = board.dimensions[i] - 1;
+			}
+			board__flatten_coord(&board, biggest_coord, &grid_width, &grid_height);
+			cell_size = fmin(window_height / (float)(grid_height + 1), window_width / (float)(grid_width + 1));
+		}
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 		SDL_RenderClear(renderer);
